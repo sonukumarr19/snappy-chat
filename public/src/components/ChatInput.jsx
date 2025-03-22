@@ -1,49 +1,60 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import Picker from 'emoji-picker-react'
-import {IoMdSend} from 'react-icons/io'
-import {BsEmojiSmileFill} from 'react-icons/bs'
+import React, { useState } from "react";
+import { BsEmojiSmileFill } from "react-icons/bs";
+import { IoMdSend } from "react-icons/io";
+import styled from "styled-components";
+import EmojiPicker from "emoji-picker-react";
 
-function ChatInput({handleSendMessage}) {
-    const [emojiPicker,setEmojiPicker] = useState(false)
-    const [msg,setMsg]=useState("")
-    const handleEmojiPickerHideShow=()=>{
-        setEmojiPicker(!emojiPicker)
+export default function ChatInput({ handleSendMsg }) {
+  const [msg, setMsg] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
+  const handleEmojiPickerhideShow = () => {
+    setShowEmojiPicker(!showEmojiPicker);
+  };
+
+  const handleEmojiClick = (emojiData) => {
+    setMsg(prevMsg => prevMsg + emojiData.emoji);
+  };
+
+  const sendChat = (event) => {
+    event.preventDefault();
+    if (msg.length > 0) {
+      handleSendMsg(msg);
+      setMsg("");
+      setShowEmojiPicker(false);
     }
-    const handleEmojiClick = (emojiObject,event) => {
-        setMsg(prevInput => prevInput + emojiObject.emoji)
-        setEmojiPicker(false)
-      }
-    const sendChat = (event)=>{
-         event.preventDefault();
-         if(msg.length>0){
-            handleSendMessage(msg)
-            setMsg("")
-         }
-    }
+  };
+
   return (
-    <>
-
-        <Container>
-            <div className="button-container">
-                <div className="emoji">
-                    <BsEmojiSmileFill onClick={handleEmojiPickerHideShow}/>
-                    
-                    {emojiPicker && <Picker onEmojiClick={handleEmojiClick} className='emoji-picker-react'/>}
-                    
-                </div>
+    <Container>
+      <div className="button-container">
+        <div className="emoji">
+          <BsEmojiSmileFill onClick={handleEmojiPickerhideShow} />
+          {showEmojiPicker && (
+            <div className="emoji-picker-wrapper">
+              <EmojiPicker 
+                onEmojiClick={handleEmojiClick}
+                theme="dark"
+                width={300}
+                height={400}
+              />
             </div>
-            <form  className="input-container" onSubmit={(e)=>sendChat(e) }>
-                <input type="text" placeholder='type your message here' value={msg} onChange={(e)=>setMsg(e.target.value)}/>
-                <button className="submit">
-                    <IoMdSend/>
-                </button>
-            </form>
-
-        </Container>
-    
-    </>
-  )
+          )}
+        </div>
+      </div>
+      <form className="input-container" onSubmit={(event) => sendChat(event)}>
+        <input
+          type="text"
+          placeholder="type your message here"
+          onChange={(e) => setMsg(e.target.value)}
+          value={msg}
+        />
+        <button type="submit">
+          <IoMdSend />
+        </button>
+      </form>
+    </Container>
+  );
 }
 
 const Container = styled.div`
@@ -68,39 +79,11 @@ const Container = styled.div`
         color: #ffff00c8;
         cursor: pointer;
       }
-
-      .emoji-picker-react {
+      .emoji-picker-wrapper {
         position: absolute;
-        margin-bottom:40px;
-        bottom: 100%;  
-        left: 0;
-        background-color: #080420;
-        box-shadow: 0 5px 10px #9a86f3;
-        border-color: #9a86f3;
+        top: -450px;
+        left: -40px;
         z-index: 999;
-
-        .emoji-scroll-wrapper::-webkit-scrollbar {
-          background-color: #080420;
-          width: 5px;
-          &-thumb {
-            background-color: #9a86f3;
-          }
-        }
-
-        .emoji-categories {
-          button {
-            filter: contrast(0);
-          }
-        }
-
-        .emoji-search {
-          background-color: transparent;
-          border-color: #9a86f3;
-        }
-
-        .emoji-group:before {
-          background-color: #080420;
-        }
       }
     }
   }
@@ -147,6 +130,4 @@ const Container = styled.div`
       }
     }
   }
-`;
-
-export default ChatInput
+`; // Added closing backtick here

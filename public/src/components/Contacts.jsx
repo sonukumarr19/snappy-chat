@@ -2,35 +2,42 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
 
-export default function Contacts({ contacts, currentUser, changeChat }) {
+export default function Contacts({ contacts, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
-
+  
   useEffect(() => {
-    if (currentUser) {    
-      setCurrentUserImage(currentUser.avatarImage);
-      setCurrentUserName(currentUser.username);
-      
-    }
-  }, [currentUser]);
-
+    const fetchUserData = () => {
+      const data = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY);
+      if (data) {
+        const parsedData = JSON.parse(data);
+        if (parsedData && parsedData.username) {
+          setCurrentUserName(parsedData.username);
+          setCurrentUserImage(parsedData.avatarImage);
+        }
+      }
+    };
+    
+    fetchUserData();
+  }, []);
+  
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
-
+  
   return (
     <>
-      {currentUserImage && currentUserName && (
+      {currentUserName && currentUserImage && (
         <Container>
           <div className="brand">
             <img src={Logo} alt="logo" />
             <h3>snappy</h3>
           </div>
-          <div className="cont">
-            {Array.isArray(contacts) && contacts.length >=0 ? ( 
-              contacts.map((contact, index) => (
+          <div className="contacts">
+            {contacts.map((contact, index) => {
+              return (
                 <div
                   key={contact._id}
                   className={`contact ${
@@ -48,10 +55,8 @@ export default function Contacts({ contacts, currentUser, changeChat }) {
                     <h3>{contact.username}</h3>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p>No contacts available</p>
-            )}
+              );
+            })}
           </div>
           <div className="current-user">
             <div className="avatar">
@@ -88,7 +93,7 @@ const Container = styled.div`
       text-transform: uppercase;
     }
   }
-  .cont {
+  .contacts {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -156,4 +161,3 @@ const Container = styled.div`
     }
   }
 `;
-

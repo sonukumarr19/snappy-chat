@@ -1,18 +1,33 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Robot from "../assets/robot.gif";
 
-function Welcome({currentUser}) {
+export default function Welcome() {
+  const [userName, setUserName] = useState("");
+  
+  useEffect(() => {
+    const fetchUserName = () => {
+      const data = localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY);
+      if (data) {
+        const parsedData = JSON.parse(data);
+        if (parsedData && parsedData.username) {
+          setUserName(parsedData.username);
+        }
+      }
+    };
+    
+    fetchUserName();
+  }, []);
+  
   return (
     <Container>
-      <img src={Robot} alt="Robot" />
+      <img src={Robot} alt="" />
       <h1>
-        Welcome, <span>{currentUser?.username}!</span>
+        Welcome, <span>{userName}!</span>
       </h1>
       <h3>Please select a chat to Start messaging.</h3>
     </Container>
   );
-  
 }
 
 const Container = styled.div`
@@ -28,5 +43,3 @@ const Container = styled.div`
     color: #4e0eff;
   }
 `;
-export default Welcome
-
